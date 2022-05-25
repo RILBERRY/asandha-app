@@ -13,13 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('patients', function (Blueprint $table) {
+        Schema::create('islands', function (Blueprint $table) {
             $table->id();
-            $table->string('fullName',50);
-            $table->date('DOB');
-            $table->string('nationalID',7);
-            $table->foreignId('address')->constrained('addresses');
-            $table->foreignId('island')->constrained('islands');
+            $table->string('islandName',20);
+            $table->string('atoll',20);
+            $table->string('country',30);
             $table->timestamps();
         });
     }
@@ -31,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('patients');
+        Schema::dropIfExists('islands');
     }
 };
