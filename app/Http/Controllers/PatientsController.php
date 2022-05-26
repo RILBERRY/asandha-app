@@ -17,9 +17,6 @@ class PatientsController extends Controller
      */
     public function patientsDetail()
     {
-        // return patients::all();
-        // return address::all();
-        // return islands::all();
         return  patients::select('*','patients.id')
         ->join('addresses', 'addresses.id', '=', 'patients.address')
         ->join('islands', 'islands.id', '=', 'patients.island')
