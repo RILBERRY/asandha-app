@@ -40,59 +40,43 @@ class PatientsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function patient(Request $request)
     {
-        // 
-        $patientIsland = $request->validate([
-            'islandName' => 'required|string',
-            'atoll' => 'required|string',
-            'country' => 'required|string'
-        ]);
-        $patientAddress = $request->validate([
-            'floor' => 'required|string',
-            'houseName' => 'required|string',
-            'street' => 'required|string',
-            'postCode' =>'integer'
-        ]);
-        //checking if the island exists in the database
-        if(islands::where('islandName',$patientIsland['islandName'])->exists()){
-            $island = islands::where('islandName',$patientIsland['islandName'])->first();
-        }else{
-            $island = islands::create([
-                'islandName' => $patientIsland['islandName'],
-                'atoll' => $patientIsland['atoll'],
-                'country' => $patientIsland['country']
-            ]);
-            $island->save();
-        }
-        // checking if db have Floor and Address both matching in a row
-        if(address::where('floor',$patientAddress['floor'])->where('houseName', $patientAddress['houseName'])->exists()){
-            $address = address::where('floor',$patientAddress['floor'])->where('houseName', $patientAddress['houseName'])->first();         
-        }else{
-            $address = address::create([
-                'floor' => $patientAddress['floor'],
-                'houseName' => $patientAddress['houseName'],
-                'street' => $patientAddress['street'],
-                'postCode' => $patientAddress['postCode']
-            ]);
-            $address->save();
-        }
-
         $patientInfo = $request->validate([
             'fullName' => 'required|string',
             'DOB' => 'required',
             'nationalID' => 'required|string',
         ]);
-        $patient = patients::create([
-            'fullName' => $patientInfo['fullName'],
-            'DOB' => $patientInfo['DOB'],
-            'nationalID' => $patientInfo['nationalID'],
-            'island' => $island->id,
-            'address' => $address->id,
 
-        ])->save();
+        $island = $this->CreateNewIsland($request);
+        $address = $this->CreateNewAddress($request);
+        if(patients::where('nationalID',$patientInfo['nationalID'])->exists()){
+            $patient = patients::where('nationalID',$patientInfo['nationalID'])->first();
+            $msg = "Patient exists";
+        }else{
+            $patient = patients::create([
+                'fullName' => $patientInfo['fullName'],
+                'DOB' => $patientInfo['DOB'],
+                'nationalID' => $patientInfo['nationalID'],
+                'island' => $island['island']->id,
+                'address' => $address['address']->id,
+                
+            ]);
+            $patient->save();
+            $msg = "Patient Created Successfully";
+        }
 
-        return $patient;
+        return ['patient' => $patient, 'msg' => $msg];
+    }
+    
+    public function island(Request $request){
+        $island = $this->CreateNewIsland($request);
+        return $island;
+    }
+
+    public function address(Request $request){
+        $address = $this->CreateNewAddress($request);
+        return $address;
     }
 
     /**
@@ -128,4 +112,51 @@ class PatientsController extends Controller
     {
         //
     }
+
+    private function CreateNewAddress($request){
+        $patientAddress = $request->validate([
+            'floor' => 'required|string',
+            'houseName' => 'required|string',
+            'street' => 'required|string',
+            'postCode' =>'integer'
+        ]);
+        if(address::where('floor',$patientAddress['floor'])->where('houseName', $patientAddress['houseName'])->exists()){
+            $address = address::where('floor',$patientAddress['floor'])->where('houseName', $patientAddress['houseName'])->first();         
+            $msg = "Address Exists";
+        }else{
+            $address = address::create([
+                'floor' => $patientAddress['floor'],
+                'houseName' => $patientAddress['houseName'],
+                'street' => $patientAddress['street'],
+                'postCode' => $patientAddress['postCode']
+            ]);
+            $address->save();
+            $msg = "Address Created Successfully";
+        }
+        return ['address' => $address, 'msg' => $msg];
+    }
+
+    private function CreateNewIsland($request){
+        $patientIsland = $request->validate([
+            'islandName' => 'required|string',
+            'atoll' => 'required|string',
+            'country' => 'required|string'
+        ]);
+        if(islands::where('islandName',$patientIsland['islandName'])->exists()){
+            $island = islands::where('islandName',$patientIsland['islandName'])->first();
+            $msg = "Island Exists";
+        }else{
+            $island = islands::create([
+                'islandName' => $patientIsland['islandName'],
+                'atoll' => $patientIsland['atoll'],
+                'country' => $patientIsland['country']
+            ]);
+            $island->save();
+            $msg = "Island Created Successfully";
+        }
+        return ['island' => $island, 'msg' => $msg];
+    }
+    
+    
+
 }
