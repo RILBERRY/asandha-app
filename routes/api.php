@@ -17,9 +17,15 @@ use Illuminate\Support\Facades\Route;
 Route::get('/patient', [PatientsController::class, 'patientsDetail']);
 Route::get('/address', [PatientsController::class, 'addressesDetail']);
 Route::get('/island', [PatientsController::class, 'islandsDetail']);
+Route::get('/patient/{id}', [PatientsController::class, 'showPatient']);
+Route::get('/address/{id}', [PatientsController::class, 'showAddress']);
 
 
 Route::post('/patient', [PatientsController::class, 'patient']);
 Route::post('/island', [PatientsController::class, 'island']);
 Route::post('/address', [PatientsController::class, 'address']);
+Route::put('/patient/{id}', [PatientsController::class, 'UpdatePatient']);
+Route::put('/address/{id}', [PatientsController::class, 'UpdateAddress']);
+Route::delete('/patient/{id}', [PatientsController::class, 'delPatient']);
+Route::delete('/address/{id}', [PatientsController::class, 'delAddress']);
 

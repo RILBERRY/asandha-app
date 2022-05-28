@@ -20,6 +20,7 @@ class PatientsController extends Controller
         return  patients::select('*','patients.id')
         ->join('addresses', 'addresses.id', '=', 'patients.address')
         ->join('islands', 'islands.id', '=', 'patients.island')
+        ->orderBy('patients.id','ASC')
         ->get();
     }
     public function addressesDetail()
@@ -82,9 +83,13 @@ class PatientsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function showPatient($id)
     {
-        //
+        return patients::find($id);
+    }
+    public function showAddress($id)
+    {
+        return address::find($id);
     }
 
     /**
@@ -94,20 +99,60 @@ class PatientsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
+    
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function delAddress(Request $request, $id)
     {
-        //
+        try {
+            $msg = address::destroy($id);
+        }
+        catch (Exception ){
+            return ['msg'=>"Delete failed! Patient with this Address exists"];
+        }
+        $msg = "Address Deleted ";
+        return ['msg'=>$msg];
+    }
+    public function delPatient(Request $request, $id)
+    {
+        try{
+            $msg = patients::destroy($id);
+        }
+        catch (Exception ){
+            return ['msg'=>"Delete failed! Contact Tech Support"];
+        }
+        $msg = "Patient Deleted ";
+
+        return ['msg'=>$msg];
+    }
+
+    public function UpdateAddress(Request $request, $id)
+    {
+        try {
+            $Address = address::find($id);
+            $Address->update($request->all());
+        }
+        catch (Exception ){
+            return ['msg'=>"Delete failed! Patient with this Address exists"];
+        }
+        $msg = "Address Updated ";
+        return ['msg'=>$msg];
+    }
+    public function UpdatePatient(Request $request, $id)
+    {
+        try{
+            $Patient = patients::find($id);
+            $Patient->update($request->all());
+        }
+        catch (Exception ){
+            return ['msg'=>"Delete failed! Try again"];
+        }
+        $msg = "Patient Updated ";
+        return ['msg'=>$msg];
     }
 
     private function CreateNewAddress($request){
