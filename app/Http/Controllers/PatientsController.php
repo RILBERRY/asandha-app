@@ -145,14 +145,42 @@ class PatientsController extends Controller
     public function UpdatePatient(Request $request, $id)
     {
         try{
-            $Patient = patients::find($id);
-            $Patient->update($request->all());
+            $Patient = patients::select('*','patients.id')
+            ->join('addresses', 'addresses.id', '=', 'patients.address')
+            ->join('islands', 'islands.id', '=', 'patients.island')
+            ->find($id);
+            if($Patient->street != $request->street || $Patient->houseName != $request->houseName){ 
+                $res = $this->CreateNewAddress($request);
+                // dd($res['msg']);
+                if($res['msg'] == 'Island Exists'){
+                    $res['address']->update($request->all());
+                }
+                else{
+                    $Patient->update([
+                        'address' => $res['address']->id
+                    ]);
+                }
+            }
+            if($Patient->atoll != $request->atoll || $Patient->islandName != $request->islandName){ 
+                $res = $this->CreateNewIsland($request);
+                // dd($res['msg']);
+                if($res['msg'] == 'Island Exists'){
+                    $res['island']->update($request->all());
+                }
+                else{
+                    $Patient->update([
+                        'island' => $res['island']->id
+                    ]);
+                }
+            }
+            // $Patient->update($request->all());
+            return $Patient;
         }
         catch (Exception ){
             return ['msg'=>"Delete failed! Try again"];
         }
-        $msg = "Patient Updated ";
-        return ['msg'=>$msg];
+        // $msg = "Patient Updated ";
+        // return ['msg'=>$msg];
     }
 
     private function CreateNewAddress($request){
