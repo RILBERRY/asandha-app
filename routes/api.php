@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/patientinfo', [PatientsController::class, 'PatientInfo']);
 Route::get('/patient', [PatientsController::class, 'patientsDetail']);
 Route::get('/address', [PatientsController::class, 'addressesDetail']);
 Route::get('/island', [PatientsController::class, 'islandsDetail']);

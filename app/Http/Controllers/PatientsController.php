@@ -23,6 +23,9 @@ class PatientsController extends Controller
         ->orderBy('patients.id','ASC')
         ->get();
     }
+    public function PatientInfo(){
+        return patients::all("fullName","nationalID");
+    }
     public function addressesDetail()
     {
         return address::all();
