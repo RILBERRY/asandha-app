@@ -137,7 +137,7 @@ class PatientsController extends Controller
             $Address->update($request->all());
         }
         catch (Exception ){
-            return ['msg'=>"Delete failed! Patient with this Address exists"];
+            return ['msg'=>"Update failed! Try again"];
         }
         $msg = "Address Updated ";
         return ['msg'=>$msg];
@@ -173,14 +173,13 @@ class PatientsController extends Controller
                     ]);
                 }
             }
-            // $Patient->update($request->all());
-            return $Patient;
+            $Patient->update($request->all());
+            $msg = "Patient details updated";
+            return ['Patient' => $Patient, 'msg' => $msg];
         }
         catch (Exception ){
-            return ['msg'=>"Delete failed! Try again"];
+            return ['msg'=>"Update failed! Try again"];
         }
-        // $msg = "Patient Updated ";
-        // return ['msg'=>$msg];
     }
 
     private function CreateNewAddress($request){
